@@ -16,41 +16,43 @@
 
 @implementation RTNActivityView
 
-- (id)initAndShow
-{
-    self = [super init];
-    if (self)
-        [self show];
-    
-    return self;
++ (instancetype)sharedInstance {
+    static RTNActivityView *instance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [[self alloc] init];
+    });
+    return instance;
 }
 
-- (void) show
++ (void)show
 {
     UIWindow *result = [[[UIApplication sharedApplication] windows] lastObject];
-
-    self.frame = result.frame;
-    self.backgroundColor = [UIColor colorWithWhite:.667 alpha:.5];
+    __weak RTNActivityView *ref = [RTNActivityView sharedInstance];
     
-    if (self.indicator == nil)
-        self.indicator = [[UIActivityIndicatorView alloc]
-                          initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    self.indicator.color = [UIColor grayColor]; // White, no gray!
-    self.indicator.frame = CGRectMake(0.0, 0.0, 80.0, 80.0);
-    self.indicator.center = self.center;
-    [self addSubview:self.indicator];
+    ref.frame = result.frame;
+    ref.backgroundColor = [UIColor colorWithWhite:.667 alpha:.5];
     
-    [self.indicator startAnimating];
+    if (ref.indicator == nil)
+        ref.indicator = [[UIActivityIndicatorView alloc]
+                         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    ref.indicator.color = [UIColor grayColor]; // White, no gray!
+    ref.indicator.frame = CGRectMake(0.0, 0.0, 80.0, 80.0);
+    ref.indicator.center = ref.center;
+    [ref addSubview:ref.indicator];
+    
+    [ref.indicator startAnimating];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = TRUE;
     
-    [result addSubview:self];
+    [result addSubview:ref];
 }
 
-- (void) remove
++ (void)remove
 {
-    [self.indicator stopAnimating];
+    __weak RTNActivityView *ref = [RTNActivityView sharedInstance];
+    [ref.indicator stopAnimating];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = FALSE;
-    [self removeFromSuperview];
+    [ref removeFromSuperview];
 }
 
 @end

@@ -10,7 +10,7 @@
 
 @interface RTNActivityView : UIView
 
-- (id)initAndShow;
-- (void) remove;
++ (void) remove;
++ (void) show;
 
 @end
